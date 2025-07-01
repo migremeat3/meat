@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>&#9679; The Archaelite Phenomenon &#9679; [CLASSIFIED]</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <style>
+        /* Basic 2000s-core styling */
+        body {
+            font-family: 'Verdana', 'Arial', sans-serif;
+            background-color: #0d0d0d; /* Dark, slightly off-black */
+            color: #c0c0c0; /* Light grey text */
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            line-height: 1.6;
+            cursor: url('data:image/x-icon;base64,AAACAAEAICACAAIAAgMAAAFgAAACgAAAAAAAABAAAAAAAwAAAAAQAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA'), auto; /* Custom cursor for creepy feel */
+            overflow-x: hidden; /* Prevent horizontal scroll due to scanlines */
+            position: relative; /* For scanline overlay */
+        }
+
+        /* Scanline Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none; /* Allow clicks through */
+            z-index: 9999; /* Ensure it's on top */
+            opacity: 0.2; /* Subtle */
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            border: 2px dashed #404040; /* Dashed border for old-school feel */
+            padding: 20px;
+            background-color: #1a1a1a; /* Slightly lighter dark background for content */
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3); /* Green glow for a tech/matrix feel */
+            position: relative; /* For glitching elements */
+        }
+
+        h1 {
+            font-family: 'Times New Roman', serif;
+            color: #00ff00; /* Neon green for titles */
+            font-size: 2.5em;
+            text-shadow: 0 0 8px #00ff00;
+            border-bottom: 1px dotted #00ff00;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-family: 'Times New Roman', serif;
+            color: #00cc00; /* Slightly darker green for sub-titles */
+            font-size: 1.8em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #00cc00;
+            padding-bottom: 5px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        a {
+            color: #00ffff; /* Cyan for links */
+            text-decoration: none;
+            border-bottom: 1px dotted #00ffff;
+        }
+
+        a:hover {
+            color: #00ff00;
+            border-bottom: 1px solid #00ff00;
+        }
+
+        .warning {
+            color: #ff0000; /* Red for warnings */
+            font-weight: bold;
+            border: 2px solid #ff0000;
+            padding: 10px;
+            margin-top: 30px;
+            background-color: #330000;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 0.8em;
+            color: #606060;
+        }
+
+        .glitch {
+            animation: glitch 1s infinite alternate;
+            display: inline-block;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 #00ff00, -0.05em -0.025em 0 #00ffff, -0.025em 0.05em 0 #ff0000; }
+            14% { text-shadow: -0.05em -0.025em 0 #00ff00, 0.025em 0.025em 0 #00ffff, -0.05em -0.05em 0 #ff0000; }
+            28% { text-shadow: 0.025em 0.05em 0 #00ff00, 0.05em 0 0 #00ffff, 0 -0.05em 0 #ff0000; }
+            42% { text-shadow: -0.025em -0.05em 0 #00ff00, -0.05em 0.025em 0 #00ffff, 0.05em 0 0 #ff0000; }
+            56% { text-shadow: 0.05em 0.025em 0 #00ff00, 0.025em -0.025em 0 #00ffff, -0.025em -0.025em 0 #ff0000; }
+            70% { text-shadow: -0.05em 0 0 #00ff00, 0.05em 0.05em 0 #00ffff, 0.025em 0.025em 0 #ff0000; }
+            84% { text-shadow: 0.025em -0.025em 0 #00ff00, -0.025em 0.05em 0 #00ffff, -0.05em 0 0 #ff0000; }
+            100% { text-shadow: 0 0.05em 0 #00ff00, 0.05em -0.05em 0 #00ffff, 0 0.025em 0 #ff0000; }
+        }
+
+        .blink {
+            animation: blink 1s step-start infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Marquee for true 2000s feel */
+        marquee {
+            background-color: #2a2a2a;
+            color: #00ff00;
+            padding: 5px 0;
+            margin-bottom: 20px;
+            border: 1px solid #00ff00;
+        }
+
+        /* Table for layout, classic 2000s */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        td {
+            padding: 10px;
+            vertical-align: top;
+            border: 1px dotted #404040;
+        }
+        .sidebar {
+            width: 20%;
+            background-color: #222;
+            padding: 10px;
+            font-size: 0.9em;
+            text-align: left;
+        }
+        .main-content {
+            width: 80%;
+            padding: 10px;
+        }
+
+        /* Redacted text effect */
+        .redacted {
+            background-color: #330000;
+            color: transparent;
+            text-shadow: none;
+            cursor: help;
+            transition: background-color 0.1s ease-in-out;
+        }
+        .redacted:hover {
+            background-color: transparent;
+            color: inherit;
+        }
+
+        /* Subliminal Message */
+        #subliminal-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.05s ease-out; /* Very fast fade */
+            width: 300px;
+            height: 200px;
+            background-color: black;
+            border: 2px solid red;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: red;
+            font-weight: bold;
+            text-shadow: 0 0 5px red;
+            box-shadow: 0 0 20px red;
+        }
+
+        /* Mouse trail dot */
+        .mouse-trail-dot {
+            position: absolute;
+            background-color: rgba(0, 255, 0, 0.5); /* Greenish glow */
+            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeOutTrail 1s forwards;
+            z-index: 9998;
+        }
+
+        @keyframes fadeOutTrail {
+            from { opacity: 0.5; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.5); }
+        }
+
+        /* Initial overlay for sound activation */
+        #initial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            color: #00ff00;
+            font-size: 1.5em;
+            cursor: pointer;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        #initial-overlay button {
+            background-color: #00ff00;
+            color: #0d0d0d;
+            border: 2px solid #00cc00;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 0 10px #00ff00;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            border-radius: 5px;
+        }
+
+        #initial-overlay button:hover {
+            background-color: #00cc00;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Initial Overlay for sound activation -->
+    <div id="initial-overlay">
+        <p><span class="glitch">ACCESSING CLASSIFIED NETWORK...</span></p>
+        <p>Click anywhere or press the button to proceed and activate audio surveillance.</p>
+        <button id="enter-site-button">ENTER SITE</button>
+    </div>
+
+    <div class="container">
+        <marquee behavior="alternate" direction="left" scrollamount="3">
+            <span class="glitch">WARNING: INFORMATION HAZARD DETECTED</span> &#9679; PROCEED WITH EXTREME CAUTION &#9679; <span class="blink">THEY ARE AMONG US</span>
+        </marquee>
+
+        <h1>&#9679; The Archaelite Phenomenon &#9679;</h1>
+        <p><em><span class="blink">[ACCESS LEVEL: RESTRICTED]</span></em></p>
+
+        <p>For too long, the truth has been suppressed. For too long, we have dismissed the subtle signs, the unsettling coincidences. But the patterns are undeniable, and the evidence, once you know where to look, is everywhere. <span class="redacted" title="Classified Information">The truth is buried deep.</span></p>
+
+        <table>
+            <tr>
+                <td class="sidebar">
+                    <h3>&#9679; NAVIGATION &#9679;</h3>
+                    <ul>
+                        <li><a href="#intro">Introduction</a></li>
+                        <li><a href="#bleach">The Bleach Effect</a></li>
+                        <li><a href="#brainfog">Cognitive Erosion</a></li>
+                        <li><a href="#signs">Identifying Them</a></li>
+                        <li><a href="#protect">Protect Yourself</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                    <p style="margin-top: 20px; font-size: 0.7em;"><em>Site last updated: <span class="blink">06/30/2005</span></em></p>
+                    <img src="https://placehold.co/120x90/000/00FF00?text=EYES+OPEN" alt="Eyes Open" style="border: 1px solid #00ff00; margin-top: 10px;">
+                    <p style="margin-top: 20px; font-size: 0.8em; color: #00ff00;">Known Archaelite Sightings: <span id="sighting-counter" class="blink">000</span></p>
+                </td>
+                <td class="main-content">
+                    <h2 id="intro">What are Archaelites?</h2>
+                    <p>They walk among us, indistinguishable from ordinary men, save for one chilling characteristic: their hair, often unnaturally, almost impossibly, blonde. Not golden, not sandy, but a stark, almost bleached hue that seems to absorb the light around it. These are the Archaelites, entities masquerading as human, whose true nature is far more sinister than any demon of folklore.</p>
+                    <p>Our research, meticulously gathered from fragmented accounts, forgotten texts, and whispered warnings, suggests they are not born, but emerge. They are ancient, perhaps extra-dimensional, and their presence on our plane is a harbinger of decay. <span class="redacted" title="Further details redacted">Their origins remain a mystery, but their purpose is clear.</span></p>
+
+                    <h2 id="bleach">The Bleach Effect: Physical Manifestation</h2>
+                    <p>One of the most disturbing aspects of Archaelites is the "Bleach Effect." Prolonged proximity to an Archaelite causes a subtle, yet undeniable, degradation of the physical environment and, more alarmingly, of living tissue. This isn't a chemical burn, but a slow, insidious draining of vitality, mimicking the corrosive action of bleach.</p>
+                    <ul>
+                        <li><strong>Fading Colors:</strong> Objects, fabrics, even photographs near an Archaelite will slowly lose their vibrancy, becoming muted, washed out, as if exposed to harsh sunlight for decades.</li>
+                        <li><strong>Brittle Materials:</strong> Wood splinters easily, paper crumbles, and plastics become unusually fragile.</li>
+                        <li><strong>Hair & Skin:</strong> Individuals in close, sustained contact report their own hair becoming brittle, losing pigment, and their skin developing an unnaturally pale, almost translucent quality. This is not albinism; it is a parasitic draining. <span class="redacted" title="Case studies classified">Numerous case studies confirm this pattern.</span></li>
+                    </ul>
+                    <p>This effect is often dismissed as environmental wear and tear, or a natural aging process. But the localized, accelerated nature of the decay around specific individuals cannot be ignored.</p>
+
+                    <h2 id="brainfog">Cognitive Erosion: The Brain Fog</h2>
+                    <p>Perhaps the most terrifying impact of Archaelites is their effect on the human mind. Their presence induces a pervasive "Brain Fog" – a gradual, yet profound, erosion of cognitive function in those in around them. This is not mere distraction or fatigue; it is a targeted assault on clarity and memory.</p>
+                    <ul>
+                        <li><strong>Memory Loss:</strong> Short-term memory is often the first to go, followed by difficulty recalling recent events, names, and even basic facts.</li>
+                        <li><strong>Difficulty Concentrating:</strong> Tasks requiring focus become impossible. Thoughts become scattered, disjointed.</li>
+                        <li><strong>Emotional Blunting:</strong> Victims report a growing apathy, a detachment from their own emotions and the emotions of others. They become easier to manipulate, less likely to question.</li>
+                        <li><strong>Suggestibility:</strong> As critical thinking diminishes, individuals become highly susceptible to suggestion, making them unwitting pawns in the Archaelites' unknown agenda.</li>
+                    </ul>
+                    <p>This "fog" is often misdiagnosed as stress, aging, or even early-onset neurological disorders. The medical community remains blind, or perhaps, is being *made* blind. <span class="redacted" title="Evidence of cover-up">There is evidence of a systematic cover-up.</span></p>
+
+                    <h2 id="signs">Identifying Them</h2>
+                    <p>Beyond the unnaturally blonde hair, look for these subtle indicators:</p>
+                    <ul>
+                        <li><strong>Unblinking Stare:</strong> A gaze that seems to pierce, yet holds no warmth.</li>
+                        <li><strong>Absence of Empathy:</strong> They may mimic human emotions, but a coldness always underlies their interactions.</li>
+                        <li><strong>Unexplained Decay:</strong> Notice accelerated fading or brittleness of objects in their immediate vicinity.</li>
+                        <li><strong>Sudden Cognitive Decline:</strong> If you or those around them experience rapid onset of "brain fog" symptoms.</li>
+                    </ul>
+
+                    <h2 id="protect">Protect Yourself</h2>
+                    <p class="warning"><strong>WARNING: DIRECT CONFRONTATION IS NOT ADVISED.</strong> Archaelites are not bound by human limitations. Your safety is paramount.</p>
+                    <p>Our current understanding suggests the following defensive measures:</p>
+                    <ol>
+                        <li><strong>Minimize Proximity:</strong> Maintain distance. If an Archaelite enters your space, find a reason to leave.</li>
+                        <li><strong>Limit Eye Contact:</strong> Their gaze is said to be a conduit for their influence.</li>
+                        <li><strong>Mental Fortification:</strong> Engage in mental exercises, puzzles, and critical thinking to resist the brain fog. Keep a journal to track your memories.</li>
+                        <li><strong>Document Everything:</strong> Note down observations, dates, and names. Share this information with trusted individuals (if you can find them).</li>
+                        <li><strong>Seek Solitude:</strong> Regular periods away from populated areas may help clear the cognitive effects.</li>
+                    </ol>
+
+                    <h2 id="contact">Contact Us</h2>
+                    <p>If you have information, or believe you have encountered an Archaelite, you are not alone. Due to the sensitive nature of this research, direct contact is difficult. Leave coded messages on obscure forums, use dead drops, or contact us via encrypted channels only.</p>
+                    <p><em><span class="blink">THE TRUTH WILL NOT BE SILENCED.</span></em></p>
+                </td>
+            </tr>
+        </table>
+
+        <div class="footer">
+            <p>&copy; 2005 [UNSANCTIONED RESEARCH INITIATIVE] - All Rights Reserved. Do Not Distribute.</p>
+            <p>&#9679; <a href="#">PRIVACY POLICY</a> &#9679; <a href="#">TERMS OF USE</a> &#9679; <a href="#">SITE MAP</a> &#9679;</p>
+        </div>
+    </div>
+
+    <!-- Subliminal Message Element -->
+    <div id="subliminal-message" style="display: none;">
+        <img src="https://placehold.co/300x200/FF0000/FFFFFF?text=THEY+ARE+WATCHING" alt="Warning" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+    </div>
+
+    <script>
+        // --- Sound Initialization ---
+        let noiseSynth;
+        let droneSynth;
+        let audioStarted = false;
+
+        // Function to start audio and other dynamic features
+        function startAudioAndFeatures() {
+            if (audioStarted) return; // Prevent multiple starts
+
+            // Tone.start() returns a Promise, ensuring audio context is ready
+            Tone.start().then(() => {
+                // Create a noise synth for static/hum
+                noiseSynth = new Tone.Noise({
+                    type: "pink" // Pink noise for a softer static
+                }).toDestination();
+                noiseSynth.volume.value = -35; // Subtle but audible volume
+
+                // Create a low drone/hum
+                droneSynth = new Tone.Oscillator({
+                    frequency: 50, // Low frequency
+                    type: "sine",
+                    volume: -25 // Subtle but audible volume
+                }).toDestination();
+
+                // Start the noise and drone
+                noiseSynth.start(); // Start continuous noise
+                droneSynth.start(); // Start continuous drone
+
+                audioStarted = true;
+                document.getElementById('initial-overlay').style.display = 'none'; // Hide overlay
+                console.log("Audio started and dynamic features initialized.");
+
+                // Start other dynamic features ONLY after audio is confirmed to start
+                updateSightingCounter();
+                flashSubliminal();
+                applyRandomGlitch();
+
+            }).catch(e => {
+                console.error("Error starting Tone.js audio:", e);
+                // Provide a user-friendly message if audio fails to start
+                const overlay = document.getElementById('initial-overlay');
+                overlay.innerHTML = `<p style="color: red; text-shadow: none;">Error: Audio could not start. Please ensure your browser allows audio playback and try reloading.</p>`;
+            });
+        }
+
+        // Event listener for the button
+        document.getElementById('enter-site-button').addEventListener('click', startAudioAndFeatures);
+        // Also allow clicking anywhere on the overlay to start
+        document.getElementById('initial-overlay').addEventListener('click', startAudioAndFeatures);
+
+
+        // --- Sighting Counter ---
+        const sightingCounter = document.getElementById('sighting-counter');
+        let currentSightings = 13; // Starting number for creepiness
+        function updateSightingCounter() {
+            currentSightings += Math.floor(Math.random() * 3); // Increment by 0-2
+            sightingCounter.textContent = String(currentSightings).padStart(3, '0');
+            setTimeout(updateSightingCounter, Math.random() * 5000 + 3000); // Update every 3-8 seconds
+        }
+
+
+        // --- Subliminal Message Flash ---
+        const subliminalMessage = document.getElementById('subliminal-message');
+        function flashSubliminal() {
+            if (Math.random() < 0.02) { // 2% chance to flash
+                subliminalMessage.style.display = 'flex'; // Show it
+                subliminalMessage.style.opacity = 1;
+                setTimeout(() => {
+                    subliminalMessage.style.opacity = 0;
+                    setTimeout(() => {
+                        subliminalMessage.style.display = 'none'; // Hide it completely after fade
+                    }, 50); // Shorter than transition for quick disappear
+                }, 50); // Display for 50ms
+            }
+            setTimeout(flashSubliminal, Math.random() * 10000 + 5000); // Check every 5-15 seconds
+        }
+
+
+        // --- Mouse Trail ---
+        document.addEventListener('mousemove', function(e) {
+            const dot = document.createElement('div');
+            dot.className = 'mouse-trail-dot';
+            dot.style.left = `${e.clientX}px`;
+            dot.style.top = `${e.clientY}px`;
+            document.body.appendChild(dot);
+
+            // Remove the dot after its animation completes
+            dot.addEventListener('animationend', () => {
+                dot.remove();
+            });
+        });
+
+        // --- Random Glitch Effect on Text Elements ---
+        const glitcheableElements = document.querySelectorAll('p, li, h2'); // Elements to potentially glitch
+
+        function applyRandomGlitch() {
+            if (Math.random() < 0.1) { // 10% chance to glitch an element
+                const randomIndex = Math.floor(Math.random() * glitcheableElements.length);
+                const element = glitcheableElements[randomIndex];
+                if (element) {
+                    element.classList.add('glitch');
+                    setTimeout(() => {
+                        element.classList.remove('glitch');
+                    }, 500 + Math.random() * 500); // Glitch for 0.5 to 1 second
+                }
+            }
+            setTimeout(applyRandomGlitch, Math.random() * 3000 + 1000); // Check every 1-4 seconds
+        }
+
+    </script>
+</body>
+</html>
