@@ -3,353 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>&#9679; The Archaelite Phenomenon &#9679; [CLASSIFIED]</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <title>Migre's Manor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
-        /* Basic 2000s-core styling */
         body {
-            font-family: 'Verdana', 'Arial', sans-serif;
-            background-color: #0d0d0d; /* Dark, slightly off-black */
-            color: #c0c0c0; /* Light grey text */
             margin: 0;
-            padding: 20px;
-            text-align: center;
-            line-height: 1.6;
-            cursor: url('data:image/x-icon;base64,AAACAAEAICACAAIAAgMAAAFgAAACgAAAAAAAABAAAAAAAwAAAAAQAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA'), auto; /* Custom cursor for creepy feel */
-            overflow-x: hidden; /* Prevent horizontal scroll due to scanlines */
-            position: relative; /* For scanline overlay */
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
         }
-
-        /* Scanline Overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
+        #game-container {
+            position: relative;
+            width: 80vw;
+            height: 80vh;
+            max-width: 640px;
+            max-height: 640px;
+            border: 2px solid #555;
+            box-shadow: 0 0 20px #f00;
+        }
+        canvas {
+            display: block;
             width: 100%;
             height: 100%;
-            background: repeating-linear-gradient(
-                to bottom,
-                rgba(0, 0, 0, 0.1),
-                rgba(0, 0, 0, 0.1) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            pointer-events: none; /* Allow clicks through */
-            z-index: 9999; /* Ensure it's on top */
-            opacity: 0.2; /* Subtle */
+            background-color: #1a1a1a;
+            image-rendering: pixelated; /* Keeps sprites sharp */
         }
-
-        .container {
-            width: 80%;
-            max-width: 800px;
-            margin: 20px auto;
-            border: 2px dashed #404040; /* Dashed border for old-school feel */
-            padding: 20px;
-            background-color: #1a1a1a; /* Slightly lighter dark background for content */
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3); /* Green glow for a tech/matrix feel */
-            position: relative; /* For glitching elements */
-        }
-
-        h1 {
-            font-family: 'Times New Roman', serif;
-            color: #00ff00; /* Neon green for titles */
-            font-size: 2.5em;
-            text-shadow: 0 0 8px #00ff00;
-            border-bottom: 1px dotted #00ff00;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            font-family: 'Times New Roman', serif;
-            color: #00cc00; /* Slightly darker green for sub-titles */
-            font-size: 1.8em;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            border-bottom: 1px dashed #00cc00;
-            padding-bottom: 5px;
-        }
-
-        p {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        a {
-            color: #00ffff; /* Cyan for links */
-            text-decoration: none;
-            border-bottom: 1px dotted #00ffff;
-        }
-
-        a:hover {
-            color: #00ff00;
-            border-bottom: 1px solid #00ff00;
-        }
-
-        .warning {
-            color: #ff0000; /* Red for warnings */
-            font-weight: bold;
-            border: 2px solid #ff0000;
-            padding: 10px;
-            margin-top: 30px;
-            background-color: #330000;
-        }
-
-        .footer {
-            margin-top: 40px;
-            font-size: 0.8em;
-            color: #606060;
-        }
-
-        .glitch {
-            animation: glitch 1s infinite alternate;
-            display: inline-block;
-        }
-
-        @keyframes glitch {
-            0% { text-shadow: 0.05em 0 0 #00ff00, -0.05em -0.025em 0 #00ffff, -0.025em 0.05em 0 #ff0000; }
-            14% { text-shadow: -0.05em -0.025em 0 #00ff00, 0.025em 0.025em 0 #00ffff, -0.05em -0.05em 0 #ff0000; }
-            28% { text-shadow: 0.025em 0.05em 0 #00ff00, 0.05em 0 0 #00ffff, 0 -0.05em 0 #ff0000; }
-            42% { text-shadow: -0.025em -0.05em 0 #00ff00, -0.05em 0.025em 0 #00ffff, 0.05em 0 0 #ff0000; }
-            56% { text-shadow: 0.05em 0.025em 0 #00ff00, 0.025em -0.025em 0 #00ffff, -0.025em -0.025em 0 #ff0000; }
-            70% { text-shadow: -0.05em 0 0 #00ff00, 0.05em 0.05em 0 #00ffff, 0.025em 0.025em 0 #ff0000; }
-            84% { text-shadow: 0.025em -0.025em 0 #00ff00, -0.025em 0.05em 0 #00ffff, -0.05em 0 0 #ff0000; }
-            100% { text-shadow: 0 0.05em 0 #00ff00, 0.05em -0.05em 0 #00ffff, 0 0.025em 0 #ff0000; }
-        }
-
-        .blink {
-            animation: blink 1s step-start infinite;
-        }
-
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-
-        /* Marquee for true 2000s feel */
-        marquee {
-            background-color: #2a2a2a;
-            color: #00ff00;
-            padding: 5px 0;
-            margin-bottom: 20px;
-            border: 1px solid #00ff00;
-        }
-
-        /* Table for layout, classic 2000s */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        td {
-            padding: 10px;
-            vertical-align: top;
-            border: 1px dotted #404040;
-        }
-        .sidebar {
-            width: 20%;
-            background-color: #222;
-            padding: 10px;
-            font-size: 0.9em;
-            text-align: left;
-        }
-        .main-content {
-            width: 80%;
-            padding: 10px;
-        }
-
-        /* Redacted text effect */
-        .redacted {
-            background-color: #330000;
-            color: transparent;
-            text-shadow: none;
-            cursor: help;
-            transition: background-color 0.1s ease-in-out;
-        }
-        .redacted:hover {
-            background-color: transparent;
-            color: inherit;
-        }
-
-        /* Subliminal Message */
-        #subliminal-message {
-            position: fixed;
+        #message-box {
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.05s ease-out; /* Very fast fade */
-            width: 300px;
-            height: 200px;
-            background-color: black;
-            border: 2px solid red;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            color: red;
-            font-weight: bold;
-            text-shadow: 0 0 5px red;
-            box-shadow: 0 0 20px red;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 1px solid #f00;
+            text-align: center;
+            font-size: 1.2em;
+            z-index: 10;
         }
-
-        /* Mouse trail dot */
-        .mouse-trail-dot {
+        #message-box button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #400;
+            border: 1px solid #f00;
+            color: #fff;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #prompt-box {
             position: absolute;
-            background-color: rgba(0, 255, 0, 0.5); /* Greenish glow */
-            border-radius: 50%;
-            width: 8px;
-            height: 8px;
-            pointer-events: none;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.75);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            z-index: 20;
             opacity: 0;
-            animation: fadeOutTrail 1s forwards;
-            z-index: 9998;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
         }
-
-        @keyframes fadeOutTrail {
-            from { opacity: 0.5; transform: scale(1); }
-            to { opacity: 0; transform: scale(0.5); }
+        #prompt-box.visible {
+            opacity: 1;
         }
-
-        /* Initial overlay for sound activation */
-        #initial-overlay {
+        #jumpscare {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background-color: #000;
+            display: none;
             justify-content: center;
-            z-index: 10001;
-            color: #00ff00;
-            font-size: 1.5em;
-            cursor: pointer;
-            text-shadow: 0 0 5px #00ff00;
+            align-items: center;
+            z-index: 100;
         }
-
-        #initial-overlay button {
-            background-color: #00ff00;
-            color: #0d0d0d;
-            border: 2px solid #00cc00;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            cursor: pointer;
-            margin-top: 30px;
-            box-shadow: 0 0 10px #00ff00;
-            transition: background-color 0.3s, box-shadow 0.3s;
-            border-radius: 5px;
+        #jumpscare.active {
+            animation: flicker 0.15s steps(1, end) infinite;
         }
-
-        #initial-overlay button:hover {
-            background-color: #00cc00;
-            box-shadow: 0 0 20px #00ff00;
+        #jumpscare img {
+            max-width: 100%;
+            max-height: 100%;
+            animation: shake 0.5s infinite;
         }
-
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        @keyframes flicker {
+            50% { background-color: #fff; }
+            100% { background-color: #000; }
+        }
+        #jumpscare.active img {
+            animation: shake 0.5s infinite, image-flicker 0.15s steps(1, end) infinite;
+        }
+        @keyframes image-flicker {
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
-    <!-- Initial Overlay for sound activation -->
-    <div id="initial-overlay">
-        <p><span class="glitch">ACCESSING CLASSIFIED NETWORK...</span></p>
-        <p>Click anywhere or press the button to proceed and activate audio surveillance.</p>
-        <button id="enter-site-button">ENTER SITE</button>
-    </div>
+    <!-- Hidden SVG for the player sprite sheet -->
+    <svg width="96" height="32" id="player-sprite-sheet" style="display: none;">
+        <defs>
+            <g id="player-body">
+                <rect x="8" y="12" width="16" height="18" fill="#8d5524"/> <!-- Torso -->
+                <circle cx="16" cy="8" r="6" fill="#f1c27d"/> <!-- Head -->
+            </g>
+        </defs>
+        <g><use href="#player-body"/><rect x="10" y="30" width="4" height="2" fill="#4d4d4d"/><rect x="18" y="30" width="4" height="2" fill="#4d4d4d"/></g>
+        <g transform="translate(32, 0)"><use href="#player-body"/><rect x="12" y="30" width="4" height="2" fill="#4d4d4d" transform="translate(0, -2)"/><rect x="20" y="30" width="4" height="2" fill="#4d4d4d"/></g>
+        <g transform="translate(64, 0)"><use href="#player-body"/><rect x="10" y="30" width="4" height="2" fill="#4d4d4d"/><rect x="18" y="30" width="4" height="2" fill="#4d4d4d" transform="translate(0, -2)"/></g>
+    </svg>
 
-    <div class="container">
-        <marquee behavior="alternate" direction="left" scrollamount="3">
-            <span class="glitch">WARNING: INFORMATION HAZARD DETECTED</span> &#9679; PROCEED WITH EXTREME CAUTION &#9679; <span class="blink">THEY ARE AMONG US</span>
-        </marquee>
-
-        <h1>&#9679; The Archaelite Phenomenon &#9679;</h1>
-        <p><em><span class="blink">[ACCESS LEVEL: RESTRICTED]</span></em></p>
-
-        <p>For too long, the truth has been suppressed. For too long, we have dismissed the subtle signs, the unsettling coincidences. But the patterns are undeniable, and the evidence, once you know where to look, is everywhere. <span class="redacted" title="Classified Information">The truth is buried deep.</span></p>
-
-        <table>
-            <tr>
-                <td class="sidebar">
-                    <h3>&#9679; NAVIGATION &#9679;</h3>
-                    <ul>
-                        <li><a href="#intro">Introduction</a></li>
-                        <li><a href="#bleach">The Bleach Effect</a></li>
-                        <li><a href="#brainfog">Cognitive Erosion</a></li>
-                        <li><a href="#signs">Identifying Them</a></li>
-                        <li><a href="#protect">Protect Yourself</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                    <p style="margin-top: 20px; font-size: 0.7em;"><em>Site last updated: <span class="blink">06/30/2005</span></em></p>
-                    <img src="https://placehold.co/120x90/000/00FF00?text=EYES+OPEN" alt="Eyes Open" style="border: 1px solid #00ff00; margin-top: 10px;">
-                    <p style="margin-top: 20px; font-size: 0.8em; color: #00ff00;">Known Archaelite Sightings: <span id="sighting-counter" class="blink">000</span></p>
-                </td>
-                <td class="main-content">
-                    <h2 id="intro">What are Archaelites?</h2>
-                    <p>They walk among us, indistinguishable from ordinary men, save for one chilling characteristic: their hair, often unnaturally, almost impossibly, blonde. Not golden, not sandy, but a stark, almost bleached hue that seems to absorb the light around it. These are the Archaelites, entities masquerading as human, whose true nature is far more sinister than any demon of folklore.</p>
-                    <p>Our research, meticulously gathered from fragmented accounts, forgotten texts, and whispered warnings, suggests they are not born, but emerge. They are ancient, perhaps extra-dimensional, and their presence on our plane is a harbinger of decay. <span class="redacted" title="Further details redacted">Their origins remain a mystery, but their purpose is clear.</span></p>
-
-                    <h2 id="bleach">The Bleach Effect: Physical Manifestation</h2>
-                    <p>One of the most disturbing aspects of Archaelites is the "Bleach Effect." Prolonged proximity to an Archaelite causes a subtle, yet undeniable, degradation of the physical environment and, more alarmingly, of living tissue. This isn't a chemical burn, but a slow, insidious draining of vitality, mimicking the corrosive action of bleach.</p>
-                    <ul>
-                        <li><strong>Fading Colors:</strong> Objects, fabrics, even photographs near an Archaelite will slowly lose their vibrancy, becoming muted, washed out, as if exposed to harsh sunlight for decades.</li>
-                        <li><strong>Brittle Materials:</strong> Wood splinters easily, paper crumbles, and plastics become unusually fragile.</li>
-                        <li><strong>Hair & Skin:</strong> Individuals in close, sustained contact report their own hair becoming brittle, losing pigment, and their skin developing an unnaturally pale, almost translucent quality. This is not albinism; it is a parasitic draining. <span class="redacted" title="Case studies classified">Numerous case studies confirm this pattern.</span></li>
-                    </ul>
-                    <p>This effect is often dismissed as environmental wear and tear, or a natural aging process. But the localized, accelerated nature of the decay around specific individuals cannot be ignored.</p>
-
-                    <h2 id="brainfog">Cognitive Erosion: The Brain Fog</h2>
-                    <p>Perhaps the most terrifying impact of Archaelites is their effect on the human mind. Their presence induces a pervasive "Brain Fog" – a gradual, yet profound, erosion of cognitive function in those in around them. This is not mere distraction or fatigue; it is a targeted assault on clarity and memory.</p>
-                    <ul>
-                        <li><strong>Memory Loss:</strong> Short-term memory is often the first to go, followed by difficulty recalling recent events, names, and even basic facts.</li>
-                        <li><strong>Difficulty Concentrating:</strong> Tasks requiring focus become impossible. Thoughts become scattered, disjointed.</li>
-                        <li><strong>Emotional Blunting:</strong> Victims report a growing apathy, a detachment from their own emotions and the emotions of others. They become easier to manipulate, less likely to question.</li>
-                        <li><strong>Suggestibility:</strong> As critical thinking diminishes, individuals become highly susceptible to suggestion, making them unwitting pawns in the Archaelites' unknown agenda.</li>
-                    </ul>
-                    <p>This "fog" is often misdiagnosed as stress, aging, or even early-onset neurological disorders. The medical community remains blind, or perhaps, is being *made* blind. <span class="redacted" title="Evidence of cover-up">There is evidence of a systematic cover-up.</span></p>
-
-                    <h2 id="signs">Identifying Them</h2>
-                    <p>Beyond the unnaturally blonde hair, look for these subtle indicators:</p>
-                    <ul>
-                        <li><strong>Unblinking Stare:</strong> A gaze that seems to pierce, yet holds no warmth.</li>
-                        <li><strong>Absence of Empathy:</strong> They may mimic human emotions, but a coldness always underlies their interactions.</li>
-                        <li><strong>Unexplained Decay:</strong> Notice accelerated fading or brittleness of objects in their immediate vicinity.</li>
-                        <li><strong>Sudden Cognitive Decline:</strong> If you or those around them experience rapid onset of "brain fog" symptoms.</li>
-                    </ul>
-
-                    <h2 id="protect">Protect Yourself</h2>
-                    <p class="warning"><strong>WARNING: DIRECT CONFRONTATION IS NOT ADVISED.</strong> Archaelites are not bound by human limitations. Your safety is paramount.</p>
-                    <p>Our current understanding suggests the following defensive measures:</p>
-                    <ol>
-                        <li><strong>Minimize Proximity:</strong> Maintain distance. If an Archaelite enters your space, find a reason to leave.</li>
-                        <li><strong>Limit Eye Contact:</strong> Their gaze is said to be a conduit for their influence.</li>
-                        <li><strong>Mental Fortification:</strong> Engage in mental exercises, puzzles, and critical thinking to resist the brain fog. Keep a journal to track your memories.</li>
-                        <li><strong>Document Everything:</strong> Note down observations, dates, and names. Share this information with trusted individuals (if you can find them).</li>
-                        <li><strong>Seek Solitude:</strong> Regular periods away from populated areas may help clear the cognitive effects.</li>
-                    </ol>
-
-                    <h2 id="contact">Contact Us</h2>
-                    <p>If you have information, or believe you have encountered an Archaelite, you are not alone. Due to the sensitive nature of this research, direct contact is difficult. Leave coded messages on obscure forums, use dead drops, or contact us via encrypted channels only.</p>
-                    <p><em><span class="blink">THE TRUTH WILL NOT BE SILENCED.</span></em></p>
-                </td>
-            </tr>
-        </table>
-
-        <div class="footer">
-            <p>&copy; 2005 [UNSANCTIONED RESEARCH INITIATIVE] - All Rights Reserved. Do Not Distribute.</p>
-            <p>&#9679; <a href="#">PRIVACY POLICY</a> &#9679; <a href="#">TERMS OF USE</a> &#9679; <a href="#">SITE MAP</a> &#9679;</p>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="message-box">
+            <p>Migre has abducted you to his manor.<br>Find the key and escape through the door.</p>
+            <button id="start-button">I Understand</button>
+        </div>
+        <div id="prompt-box"></div>
+        <div id="jumpscare">
+            <img id="jumpscare-image" src="https://github.com/migremeat3/meat/blob/main/image.png?raw=true" alt="Jumpscare Image">
         </div>
     </div>
-
-    <!-- Subliminal Message Element -->
-    <div id="subliminal-message" style="display: none;">
-        <img src="https://placehold.co/300x200/FF0000/FFFFFF?text=THEY+ARE+WATCHING" alt="Warning" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-    </div>
+    
+    <audio id="jumpscare-sound" src="https://www.myinstants.com/media/sounds/roblox-death-sound-effect.mp3" preload="auto"></audio>
 
     <script>
-        // --- Sound Initialization ---
+        // --- Game Setup ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const messageBox = document.getElementById('message-box');
+        const startButton = document.getElementById('start-button');
+        const jumpscareDiv = document.getElementById('jumpscare');
+        const promptBox = document.getElementById('prompt-box');
+        
+        let gameLoopId;
+        let music;
+        let synth;
+        let playerSprite;
+        let promptTimeout;
+
+        // --- Game State ---
+        const TILE_SIZE = 40;
+        let player, key, door, xbox;
+        let currentRoom = { x: 0, y: 0 };
+        let gameOver = false;
+
+        // --- Map Layout ---
+        // 0 = floor, 1 = wall, 'D' = door, 'K' = key spawn, 'X' = Xbox
+        const dungeonLayout = [
+            [
+                { name: 'Start Room', layout: [
+                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],['D',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                ]},
+                { name: 'Corridor', layout: [
+                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,'X',0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                ]},
+                { name: 'Key Room', layout: [
+                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1],[1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,0,0,0,0,0,'K',0,0,0,1,0,0,0,0,1],[0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                ]},
+            ]
+        ];
+
+        // --- Game Initialization ---
+        function loadSprite() {
+            const svgElement = document.getElementById('player-sprite-sheet');
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(svgElement);
+            const svg64 = window.btoa(svgString);
+            const dataUrl = 'data:image/svg+xml;base64,' + svg64;
+
+            playerSprite = new Image();
+            playerSprite.src = dataUrl;
+            playerSprite.onload = () => {
+                init();
+            };
+        }
+
+        function init() {
+            canvas.width = dungeonLayout[0][0].layout[0].length * TILE_SIZE;
+            canvas.height = dungeonLayout[0][0].layout.length * TILE_SIZE;
+
+            player = { x: TILE_SIZE * 2, y: TILE_SIZE * 7, width: TILE_SIZE, height: TILE_SIZE, speed: 3, hasKey: false, isMoving: false, animFrame: 0, animTick: 0, animSpeed: 8 };
+            key = { x: 0, y: 0, width: TILE_SIZE * 0.5, height: TILE_SIZE * 0.5, isCollected: false, roomX: 2, roomY: 0 };
+            door = { x: 0, y: 0, width: TILE_SIZE, height: TILE_SIZE, roomX: 0, roomY: 0 };
+            xbox = { x: 0, y: 0, width: TILE_SIZE, height: TILE_SIZE, roomX: 1, roomY: 0, interacted: false };
+
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        // --- UI and Sound ---
+        function showPrompt(text) {
+            promptBox.textContent = text;
+            promptBox.classList.add('visible');
+            if (promptTimeout) clearTimeout(promptTimeout);
+            promptTimeout = setTimeout(() => {
+                promptBox.classList.remove('visible');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        function startMusic() {
+            Tone.start();
+            music = new Tone.Loop(time => {
+                synth.triggerAttackRelease("C2", "2n", time);
+                synth.triggerAttackRelease("G#2", "2n", time + 1);
+            }, "2m").start(0);
+            synth = new Tone.Synth({ oscillator: { type: "amsine" }, envelope: { attack: 0.9, decay: 0.2, sustain: 0.5, release: 0.9 } }).toDestination();
+            Tone.Transport.bpm.value = 40;
+            Tone.Transport.start();
+        }
+
+        function triggerJumpscare() {
+            gameOver = true;
+            cancelAnimationFrame(gameLoopId);
+            if (music) { Tone.Transport.stop(); Tone.Transport.cancel(); }
+            const screamSound = document.getElementById('jumpscare-sound');
+            if (screamSound) { screamSound.play(); }
+            jumpscareDiv.style.display = 'flex';
+            jumpscareDiv.classList.add('active');
+        }
+
+        // --- Drawing ---
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const roomData = dungeonLayout[currentRoom.y][currentRoom.x];
+            const layout = roomData.layout;
+
+            for (let y = 0; y < layout.length; y++) {
+                for (let x = 0; x < layout[y].length; x++) {
+                    const tile = layout[y][x];
+                    if (tile === 1) {
+                        ctx.fillStyle = '#4a2b13';
+                        ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        ctx.strokeStyle = '#3a1b03';
+                        ctx.strokeRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    } else if (tile === 'D') {
+                        door.x = x * TILE_SIZE; door.y = y * TILE_SIZE;
+                        ctx.fillStyle = '#654321';
+                        ctx.fillRect(door.x, door.y, door.width, door.height);
+                        ctx.fillStyle = player.hasKey ? '#ffff00' : '#333';
+                        ctx.beginPath();
+                        ctx.arc(door.x + door.width * 0.8, door.y + door.height / 2, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if (tile === 'K' && !key.isCollected) {
+                        key.x = x * TILE_SIZE + (TILE_SIZE - key.width) / 2;
+                        key.y = y * TILE_SIZE + (TILE_SIZE - key.height) / 2;
+                        if (currentRoom.x === key.roomX && currentRoom.y === key.roomY) {
+                            ctx.fillStyle = 'gold';
+                            ctx.fillRect(key.x, key.y, key.width, key.height * 0.4);
+                            ctx.beginPath();
+                            ctx.arc(key.x + key.width / 2, key.y - key.height * 0.1, key.width / 3, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    } else if (tile === 'X') {
+                        xbox.x = x * TILE_SIZE; xbox.y = y * TILE_SIZE;
+                        ctx.fillStyle = '#3d3d3d';
+                        ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        const xboxX = x * TILE_SIZE + TILE_SIZE * 0.15, xboxY = y * TILE_SIZE + TILE_SIZE * 0.25;
+                        const xboxWidth = TILE_SIZE * 0.7, xboxHeight = TILE_SIZE * 0.5;
+                        ctx.fillStyle = '#101010';
+                        ctx.fillRect(xboxX, xboxY, xboxWidth, xboxHeight);
+                        ctx.fillStyle = '#107c10';
+                        ctx.beginPath();
+                        ctx.arc(xboxX + xboxWidth / 2, xboxY + xboxHeight / 2, TILE_SIZE * 0.1, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else {
+                        ctx.fillStyle = '#3d3d3d';
+                        ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    }
+                }
+            }
+
+            if (playerSprite.complete) {
+                const frameWidth = 32, frameHeight = 32;
+                const currentFrame = player.isMoving ? player.animFrame + 1 : 0;
+                const sourceX = currentFrame === 1 ? frameWidth : (currentFrame === 2 ? frameWidth * 2 : 0);
+                ctx.drawImage(playerSprite, sourceX, 0, frameWidth, frameHeight, player.x, player.y, player.width, player.height);
+            }
+        }
+
+        // --- Game Logic and Movement ---
+        const keysPressed = {};
+        window.addEventListener('keydown', (e) => { keysPressed[e.key] = true; });
+        window.addEventListener('keyup', (e) => { keysPressed[e.key] = false; });
+
+        function update() {
+            if (gameOver) return;
+            const prevX = player.x, prevY = player.y;
+            player.isMoving = false;
+            if (keysPressed['ArrowUp'] || keysPressed['w']) { player.y -= player.speed; player.isMoving = true; }
+            if (keysPressed['ArrowDown'] || keysPressed['s']) { player.y += player.speed; player.isMoving = true; }
+            if (keysPressed['ArrowLeft'] || keysPressed['a']) { player.x -= player.speed; player.isMoving = true; }
+            if (keysPressed['ArrowRight'] || keysPressed['d']) { player.x += player.speed; player.isMoving = true; }
+            if (player.isMoving) {
+                player.animTick++;
+                if (player.animTick > player.animSpeed) {
+                    player.animTick = 0;
+                    player.animFrame = (player.animFrame + 1) % 2;
+                }
+            } else { player.animFrame = 0; }
+            handleCollisions(prevX, prevY);
+            checkInteractions();
+            handleRoomTransition();
+        }
+        
+        function handleCollisions(prevX, prevY) {
+            const layout = dungeonLayout[currentRoom.y][currentRoom.x].layout;
+            const p_offset = TILE_SIZE * 0.2;
+            const p_width = player.width - 2 * p_offset, p_height = player.height - 2 * p_offset;
+            const pLeft = Math.floor((player.x + p_offset) / TILE_SIZE), pRight = Math.floor((player.x + p_offset + p_width) / TILE_SIZE);
+            const pTop = Math.floor((player.y + p_offset) / TILE_SIZE), pBottom = Math.floor((player.y + p_offset + p_height) / TILE_SIZE);
+            if (layout[pTop]?.[pLeft] === 1 || layout[pTop]?.[pRight] === 1 || layout[pBottom]?.[pLeft] === 1 || layout[pBottom]?.[pRight] === 1) {
+                player.x = prevX; player.y = prevY;
+            }
+        }
+
+        function checkInteractions() {
+            // Key collection
+            if (!key.isCollected && currentRoom.x === key.roomX && currentRoom.y === key.roomY) {
+                if (player.x < key.x + key.width && player.x + player.width > key.x && player.y < key.y + key.height && player.y + player.height > key.y) {
+                    key.isCollected = true; player.hasKey = true;
+                    showPrompt("You have collected the key, now escape before he returns!");
+                }
+            }
+            // Door interaction
+            if (currentRoom.x === door.roomX && currentRoom.y === door.roomY) {
+                if (player.x < door.x + door.width && player.x + player.width > door.x && player.y < door.y + door.height && player.y + player.height > door.y) {
+                    if (player.hasKey) { triggerJumpscare(); }
+                }
+            }
+            // Xbox interaction
+            if (currentRoom.x === xbox.roomX && currentRoom.y === xbox.roomY && !xbox.interacted) {
+                if (player.x < xbox.x + xbox.width && player.x + player.width > xbox.x && player.y < xbox.y + xbox.height && player.y + player.height > xbox.y) {
+                    showPrompt("This is Migre's Xbox, it reeks of grind.");
+                    xbox.interacted = true;
+                }
+            }
+        }
+
+        function handleRoomTransition() {
+            if (player.x + player.width > canvas.width) {
+                if (dungeonLayout[currentRoom.y]?.[currentRoom.x + 1]) { currentRoom.x++; player.x = 10; } 
+                else { player.x = canvas.width - player.width; }
+            }
+            if (player.x < 0) {
+                if (dungeonLayout[currentRoom.y]?.[currentRoom.x - 1]) { currentRoom.x--; player.x = canvas.width - player.width - 10; } 
+                else { player.x = 0; }
+            }
+            if (player.y + player.height > canvas.height) {
+                if (dungeonLayout[currentRoom.y + 1]?.[currentRoom.x]) { currentRoom.y++; player.y = 10; } 
+                else { player.y = canvas.height - player.height; }
+            }
+            if (player.y < 0) {
+                if (dungeonLayout[currentRoom.y - 1]?.[currentRoom.x]) { currentRoom.y--; player.y = canvas.height - player.height - 10; } 
+                else { player.y = 0; }
+            }
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        startButton.addEventListener('click', () => {
+            messageBox.style.display = 'none';
+            startMusic();
+            loadSprite();
+        });
+    </script>
+</body>
+</html>
+
         let noiseSynth;
         let droneSynth;
         let audioStarted = false;
