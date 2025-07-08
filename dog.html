@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migre's Manor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+        }
+        #game-container {
+            position: relative;
+            width: 80vw;
+            height: 80vh;
+            max-width: 640px;
+            max-height: 640px;
+            border: 2px solid #555;
+            box-shadow: 0 0 20px #f00;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a1a;
+            image-rendering: pixelated; /* Keeps sprites sharp */
+        }
+        #message-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 1px solid #f00;
+            text-align: center;
+            font-size: 1.2em;
+            z-index: 10;
+        }
+        #message-box button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #400;
+            border: 1px solid #f00;
+            color: #fff;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #prompt-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.75);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+        }
+        #prompt-box.visible {
+            opacity: 1;
+        }
+        #jumpscare {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        #jumpscare.active {
+            animation: flicker 0.15s steps(1, end) infinite;
+        }
+        #jumpscare img {
+            max-width: 100%;
+            max-height: 100%;
+            animation: shake 0.5s infinite;
+        }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        @keyframes flicker {
+            50% { background-color: #fff; }
+            100% { background-color: #000; }
+        }
+        #jumpscare.active img {
+            animation: shake 0.5s infinite, image-flicker 0.15s steps(1, end) infinite;
+        }
+        @keyframes image-flicker {
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hidden SVG for the player sprite sheet -->
+    <svg width="96" height="32" id="player-sprite-sheet" style="display: none;">
+        <defs>
+            <g id="player-body">
+                <rect x="8" y="12" width="16" height="18" fill="#8d5524"/> <!-- Torso -->
+                <circle cx="16" cy="8" r="6" fill="#f1c27d"/> <!-- Head -->
+            </g>
+        </defs>
+        <g><use href="#player-body"/><rect x="10" y="30" width="4" height="2" fill="#4d4d4d"/><rect x="18" y="30" width="4" height="2" fill="#4d4d4d"/></g>
+        <g transform="translate(32, 0)"><use href="#player-body"/><rect x="12" y="30" width="4" height="2" fill="#4d4d4d" transform="translate(0, -2)"/><rect x="20" y="30" width="4" height="2" fill="#4d4d4d"/></g>
+        <g transform="translate(64, 0)"><use href="#player-body"/><rect x="10" y="30" width="4" height="2" fill="#4d4d4d"/><rect x="18" y="30" width="4" height="2" fill="#4d4d4d" transform="translate(0, -2)"/></g>
+    </svg>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="message-box">
+            <p>Migre has abducted you to his manor.<br>Find the key and escape through the door.</p>
+            <button id="start-button">I Understand</button>
+        </div>
+        <div id="prompt-box"></div>
+        <div id="jumpscare">
+            <img id="jumpscare-image" src="https://github.com/migremeat3/meat/blob/main/image.png?raw=true" alt="Jumpscare Image">
+        </div>
+    </div>
+    
+    <audio id="jumpscare-sound" src="https://raw.githubusercontent.com/migremeat3/meat/main/full-golden-freddy-scream.mp3" preload="auto"></audio>
+
+    <script>
+        // --- Game Setup ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const messageBox = document.getElementById('message-box');
+        const startButton = document.getElementById('start-button');
+        const jumpscareDiv = document.getElementById('jumpscare');
+        const promptBox = document.getElementById('prompt-box');
+        
+        let gameLoopId;
+        let music;
+        let synth;
+        let playerSprite;
+        let promptTimeout;
+
+        // --- Game State ---
+        const TILE_SIZE = 40;
+        let player, key, door, xbox;
+        let currentRoom = { x: 0, y: 0 };
+        let gameOver = false;
+
+        // --- Map Layout ---
+        // 0 = floor, 1 = wall, 'D' = door, 'K' = key spawn, 'X' = Xbox
+        const dungeonLayout = [
+            [
+                { name: 'Start Room', layout: [
+                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],['D',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                ]},
+                { name: 'Corridor', layout: [
+                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,'X',0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                ]},
+                { name: 'Key Room', layout: [
+                    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1],[1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,0,0,0,0,0,'K',0,0,0,1,0,0,0,0,1],[0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],[1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                ]},
+            ]
+        ];
+
+        // --- Game Initialization ---
+        function loadSprite() {
+            const svgElement = document.getElementById('player-sprite-sheet');
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(svgElement);
+            const svg64 = window.btoa(svgString);
+            const dataUrl = 'data:image/svg+xml;base64,' + svg64;
+
+            playerSprite = new Image();
+            playerSprite.src = dataUrl;
+            playerSprite.onload = () => {
+                init();
+            };
+        }
+
+        function init() {
+            canvas.width = dungeonLayout[0][0].layout[0].length * TILE_SIZE;
+            canvas.height = dungeonLayout[0][0].layout.length * TILE_SIZE;
+
+            player = { x: TILE_SIZE * 2, y: TILE_SIZE * 7, width: TILE_SIZE, height: TILE_SIZE, speed: 3, hasKey: false, isMoving: false, animFrame: 0, animTick: 0, animSpeed: 8 };
+            key = { x: 0, y: 0, width: TILE_SIZE * 0.5, height: TILE_SIZE * 0.5, isCollected: false, roomX: 2, roomY: 0 };
+            door = { x: 0, y: 0, width: TILE_SIZE, height: TILE_SIZE, roomX: 0, roomY: 0 };
+            xbox = { x: 0, y: 0, width: TILE_SIZE, height: TILE_SIZE, roomX: 1, roomY: 0, interacted: false };
+
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        // --- UI and Sound ---
+        function showPrompt(text) {
+            promptBox.textContent = text;
+            promptBox.classList.add('visible');
+            if (promptTimeout) clearTimeout(promptTimeout);
+            promptTimeout = setTimeout(() => {
+                promptBox.classList.remove('visible');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        function startMusic() {
+            Tone.start();
+            music = new Tone.Loop(time => {
+                synth.triggerAttackRelease("C2", "2n", time);
+                synth.triggerAttackRelease("G#2", "2n", time + 1);
+            }, "2m").start(0);
+            synth = new Tone.Synth({ oscillator: { type: "amsine" }, envelope: { attack: 0.9, decay: 0.2, sustain: 0.5, release: 0.9 } }).toDestination();
+            Tone.Transport.bpm.value = 40;
+            Tone.Transport.start();
+        }
+
+        function triggerJumpscare() {
+            gameOver = true;
+            cancelAnimationFrame(gameLoopId);
+            if (music) { Tone.Transport.stop(); Tone.Transport.cancel(); }
+            const screamSound = document.getElementById('jumpscare-sound');
+            if (screamSound) { screamSound.play(); }
+            jumpscareDiv.style.display = 'flex';
+            jumpscareDiv.classList.add('active');
+        }
+
+        // --- Drawing ---
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const roomData = dungeonLayout[currentRoom.y][currentRoom.x];
+            const layout = roomData.layout;
+
+            for (let y = 0; y < layout.length; y++) {
+                for (let x = 0; x < layout[y].length; x++) {
+                    const tile = layout[y][x];
+                    if (tile === 1) {
+                        ctx.fillStyle = '#4a2b13';
+                        ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        ctx.strokeStyle = '#3a1b03';
+                        ctx.strokeRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    } else if (tile === 'D') {
+                        door.x = x * TILE_SIZE; door.y = y * TILE_SIZE;
+                        ctx.fillStyle = '#654321';
+                        ctx.fillRect(door.x, door.y, door.width, door.height);
+                        ctx.fillStyle = player.hasKey ? '#ffff00' : '#333';
+                        ctx.beginPath();
+                        ctx.arc(door.x + door.width * 0.8, door.y + door.height / 2, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if (tile === 'K' && !key.isCollected) {
+                        key.x = x * TILE_SIZE + (TILE_SIZE - key.width) / 2;
+                        key.y = y * TILE_SIZE + (TILE_SIZE - key.height) / 2;
+                        if (currentRoom.x === key.roomX && currentRoom.y === key.roomY) {
+                            ctx.fillStyle = 'gold';
+                            ctx.fillRect(key.x, key.y, key.width, key.height * 0.4);
+                            ctx.beginPath();
+                            ctx.arc(key.x + key.width / 2, key.y - key.height * 0.1, key.width / 3, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    } else if (tile === 'X') {
+                        xbox.x = x * TILE_SIZE; xbox.y = y * TILE_SIZE;
+                        ctx.fillStyle = '#3d3d3d';
+                        ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        const xboxX = x * TILE_SIZE + TILE_SIZE * 0.15, xboxY = y * TILE_SIZE + TILE_SIZE * 0.25;
+                        const xboxWidth = TILE_SIZE * 0.7, xboxHeight = TILE_SIZE * 0.5;
+                        ctx.fillStyle = '#101010';
+                        ctx.fillRect(xboxX, xboxY, xboxWidth, xboxHeight);
+                        ctx.fillStyle = '#107c10';
+                        ctx.beginPath();
+                        ctx.arc(xboxX + xboxWidth / 2, xboxY + xboxHeight / 2, TILE_SIZE * 0.1, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else {
+                        ctx.fillStyle = '#3d3d3d';
+                        ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    }
+                }
+            }
+
+            if (playerSprite.complete) {
+                const frameWidth = 32, frameHeight = 32;
+                const currentFrame = player.isMoving ? player.animFrame + 1 : 0;
+                const sourceX = currentFrame === 1 ? frameWidth : (currentFrame === 2 ? frameWidth * 2 : 0);
+                ctx.drawImage(playerSprite, sourceX, 0, frameWidth, frameHeight, player.x, player.y, player.width, player.height);
+            }
+        }
+
+        // --- Game Logic and Movement ---
+        const keysPressed = {};
+        window.addEventListener('keydown', (e) => { keysPressed[e.key] = true; });
+        window.addEventListener('keyup', (e) => { keysPressed[e.key] = false; });
+
+        function update() {
+            if (gameOver) return;
+            const prevX = player.x, prevY = player.y;
+            player.isMoving = false;
+            if (keysPressed['ArrowUp'] || keysPressed['w']) { player.y -= player.speed; player.isMoving = true; }
+            if (keysPressed['ArrowDown'] || keysPressed['s']) { player.y += player.speed; player.isMoving = true; }
+            if (keysPressed['ArrowLeft'] || keysPressed['a']) { player.x -= player.speed; player.isMoving = true; }
+            if (keysPressed['ArrowRight'] || keysPressed['d']) { player.x += player.speed; player.isMoving = true; }
+            if (player.isMoving) {
+                player.animTick++;
+                if (player.animTick > player.animSpeed) {
+                    player.animTick = 0;
+                    player.animFrame = (player.animFrame + 1) % 2;
+                }
+            } else { player.animFrame = 0; }
+            handleCollisions(prevX, prevY);
+            checkInteractions();
+            handleRoomTransition();
+        }
+        
+        function handleCollisions(prevX, prevY) {
+            const layout = dungeonLayout[currentRoom.y][currentRoom.x].layout;
+            const p_offset = TILE_SIZE * 0.2;
+            const p_width = player.width - 2 * p_offset, p_height = player.height - 2 * p_offset;
+            const pLeft = Math.floor((player.x + p_offset) / TILE_SIZE), pRight = Math.floor((player.x + p_offset + p_width) / TILE_SIZE);
+            const pTop = Math.floor((player.y + p_offset) / TILE_SIZE), pBottom = Math.floor((player.y + p_offset + p_height) / TILE_SIZE);
+            if (layout[pTop]?.[pLeft] === 1 || layout[pTop]?.[pRight] === 1 || layout[pBottom]?.[pLeft] === 1 || layout[pBottom]?.[pRight] === 1) {
+                player.x = prevX; player.y = prevY;
+            }
+        }
+
+        function checkInteractions() {
+            // Key collection
+            if (!key.isCollected && currentRoom.x === key.roomX && currentRoom.y === key.roomY) {
+                if (player.x < key.x + key.width && player.x + player.width > key.x && player.y < key.y + key.height && player.y + player.height > key.y) {
+                    key.isCollected = true; player.hasKey = true;
+                    showPrompt("You have collected the key, now escape before he returns!");
+                }
+            }
+            // Door interaction
+            if (currentRoom.x === door.roomX && currentRoom.y === door.roomY) {
+                if (player.x < door.x + door.width && player.x + player.width > door.x && player.y < door.y + door.height && player.y + player.height > door.y) {
+                    if (player.hasKey) { triggerJumpscare(); }
+                }
+            }
+            // Xbox interaction
+            if (currentRoom.x === xbox.roomX && currentRoom.y === xbox.roomY && !xbox.interacted) {
+                if (player.x < xbox.x + xbox.width && player.x + player.width > xbox.x && player.y < xbox.y + xbox.height && player.y + player.height > xbox.y) {
+                    showPrompt("This is Migre's Xbox, it reeks of grind.");
+                    xbox.interacted = true;
+                }
+            }
+        }
+
+        function handleRoomTransition() {
+            if (player.x + player.width > canvas.width) {
+                if (dungeonLayout[currentRoom.y]?.[currentRoom.x + 1]) { currentRoom.x++; player.x = 10; } 
+                else { player.x = canvas.width - player.width; }
+            }
+            if (player.x < 0) {
+                if (dungeonLayout[currentRoom.y]?.[currentRoom.x - 1]) { currentRoom.x--; player.x = canvas.width - player.width - 10; } 
+                else { player.x = 0; }
+            }
+            if (player.y + player.height > canvas.height) {
+                if (dungeonLayout[currentRoom.y + 1]?.[currentRoom.x]) { currentRoom.y++; player.y = 10; } 
+                else { player.y = canvas.height - player.height; }
+            }
+            if (player.y < 0) {
+                if (dungeonLayout[currentRoom.y - 1]?.[currentRoom.x]) { currentRoom.y--; player.y = canvas.height - player.height - 10; } 
+                else { player.y = 0; }
+            }
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        startButton.addEventListener('click', () => {
+            messageBox.style.display = 'none';
+            startMusic();
+            loadSprite();
+        });
+    </script>
+</body>
+</html>
